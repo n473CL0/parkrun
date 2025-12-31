@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Paddington Rec Juniors 2024 Wrapped</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+        :root {
+            /* PARKRUN BRAND PALETTE */
+            --parkrun-main-green: #00543a;
+            --parkrun-dark-bg: #001a12; /* Very dark green for background */
+            --text-white: #ffffff;
+
+            /* PARKRUN MILESTONE/THEME ACCENTS */
+            --pr-red-50: #ff3b30;
+            --pr-purple-v25: #6e2b8c;
+            --pr-blue-500: #0077b5;
+            --pr-orange-highvis: #f15a24;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--parkrun-dark-bg);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            color: var(--text-white);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Slides */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Background Gradients - PARKRUN THEMED */
+        .bg-intro { background: linear-gradient(135deg, var(--parkrun-main-green), var(--parkrun-dark-bg)); }
+        .bg-stats { background: linear-gradient(135deg, var(--pr-red-50), #cc0000); }
+        .bg-growth { background: linear-gradient(135deg, var(--pr-purple-v25), #4a1d5e); }
+        .bg-distance { background: linear-gradient(135deg, var(--pr-blue-500), #004c75); }
+        .bg-volunteers { background: linear-gradient(135deg, var(--pr-orange-highvis), #cc4400); }
+        .bg-outro { background: linear-gradient(135deg, var(--parkrun-dark-bg), #003322); }
+
+        /* Typography */
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+        
+        h2 {
+            font-size: 4.5rem;
+            margin: 0;
+            line-height: 1;
+            color: var(--text-white);
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 10px 0 30px 0;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .highlight {
+            /* parkrun green text on white background */
+            color: var(--parkrun-main-green);
+            background-color: var(--text-white);
+            padding: 5px 15px;
+            display: inline-block;
+            transform: rotate(-3deg);
+            margin-bottom: 15px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+            display: flex;
+            gap: 5px;
+            z-index: 50;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+        }
+
+        /* Navigation Zones */
+        .nav-zone {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            z-index: 40;
+            cursor: pointer;
+        }
+        .nav-left { left: 0; width: 35%; }
+        .nav-right { right: 0; width: 65%; }
+
+        /* Button */
+        .btn {
+            position: relative;
+            z-index: 100; /* Ensures button is clickable above nav zones */
+            margin-top: 30px;
+            padding: 18px 35px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 900;
+            font-size: 1.1rem;
+            /* parkrun green background with white text */
+            background: var(--parkrun-main-green);
+            color: var(--text-white);
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s, background-color 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .btn:active { transform: scale(0.95); background-color: #00442f; }
+
+        /* Summary Grid Styles */
+        .summary-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card .num {
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        /* Stats Colors matching new parkrun slides */
+        .c-red { color: var(--pr-red-50); }
+        .c-vpurple { color: var(--pr-purple-v25); }
+        .c-vblue { color: var(--pr-blue-500); }
+        .c-vorange { color: var(--pr-orange-highvis); }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .slide-content {
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333; /* parkrun dark text color fallback */
+            color: #fff;
+            text-align: center;
+            border-radius: 25px;
+            padding: 16px;
+            position: fixed;
+            z-index: 200;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 17px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="progress-container" id="progressContainer"></div>
+
+    <div id="app">
+        
+        <div class="slide bg-intro active">
+            <div class="slide-content">
+                <p style="margin-bottom: 20px;">PADDINGTON REC JUNIORS</p>
+                <h1>YOUR YEAR<br>WRAPPED</h1>
+                <p>We looked back at the last 12 months...</p>
+            </div>
+        </div>
+
+        <div class="slide bg-stats">
+            <div class="slide-content">
+                <p style="margin-bottom: 20px;">Sunday mornings were busy.</p>
+                
+                <div class="highlight">TOTAL FINISHES</div>
+                <h2>2,382</h2>
+                <h3>RUNS COMPLETED</h3>
+
+                <div class="highlight">UNIQUE RUNNERS</div>
+                <h2>475</h2>
+            </div>
+        </div>
+
+        <div class="slide bg-growth">
+            <div class="slide-content">
+                <p>The family is growing.</p>
+                <br><br>
+                <div class="highlight">NEW REGISTRATIONS</div>
+                <h2>428</h2>
+                <br>
+                <p style="max-width: 300px; line-height: 1.5;">That's 428 new barcodes printed and 428 new journeys started.</p>
+            </div>
+        </div>
+
+        <div class="slide bg-distance">
+            <div class="slide-content">
+                <p>Together, you ran</p>
+                <h1 style="font-size: 5rem; margin: 10px 0;">4,764</h1>
+                <p>KILOMETERS</p>
+                <br><br>
+                <div class="highlight">FUN FACT</div>
+                <p style="font-size: 1.1rem; max-width: 320px; margin-top: 15px; line-height: 1.4;">
+                    That is further than the distance from London to Newfoundland, Canada! 🇨🇦
+                </p>
+            </div>
+        </div>
+
+        <div class="slide bg-volunteers">
+            <div class="slide-content">
+                <div class="highlight">THE HEROES</div>
+                <h2>367</h2>
+                <h3>VOLUNTEERS</h3>
+                <br>
+                <div class="highlight">OCCASIONS</div>
+                <h2>2,676</h2>
+                <br>
+                <p>You showed up for us, rain or shine.</p>
+            </div>
+        </div>
+
+        <div class="slide bg-outro">
+            <div class="slide-content">
+                <h1 style="font-size: 2.5rem; margin-bottom: 30px;">2024 RECAP</h1>
+                
+                <div class="summary-container">
+                    <div class="stat-card">
+                        <span class="num c-red">2,382</span>
+                        <span class="label">Runs Completed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="num c-vblue">4,764</span>
+                        <span class="label">Kilometers</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="num c-vpurple">428</span>
+                        <span class="label">New Joiners</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="num c-red">475</span>
+                        <span class="label">Unique Runners</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="num c-vorange">367</span>
+                        <span class="label">Volunteers</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="num c-vorange">2,676</span>
+                        <span class="label">Roles Filled</span>
+                    </div>
+                </div>
+
+                <p style="font-size: 1rem; margin-top: 10px;">See you Sunday @ 9:00 AM</p>
+
+                <button onclick="sharePage(event)" class="btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    Share This Recap
+                </button>
+                
+                <div style="font-size: 0.8rem; opacity: 0.5; margin-top: 20px;">Tap right to replay</div>
+            </div>
+        </div>
+
+        <div class="nav-zone nav-left" onclick="prevSlide()"></div>
+        <div class="nav-zone nav-right" onclick="nextSlide()"></div>
+
+    </div>
+
+    <div id="toast">Link copied to clipboard!</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressContainer = document.getElementById('progressContainer');
+        let currentSlide = 0;
+        let slideDuration = 6000; 
+        let slideInterval;
+
+        // Create Progress Bars
+        slides.forEach((_, index) => {
+            const bar = document.createElement('div');
+            bar.className = 'progress-bar';
+            const fill = document.createElement('div');
+            fill.className = 'progress-fill';
+            fill.id = `fill-${index}`;
+            bar.appendChild(fill);
+            progressContainer.appendChild(bar);
+        });
+
+        function showSlide(index) {
+            if (index >= slides.length) {
+                index = slides.length - 1; 
+                return;
+            } else if (index < 0) {
+                index = 0;
+            }
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlide = index;
+
+            slides.forEach((_, i) => {
+                const fill = document.getElementById(`fill-${i}`);
+                fill.style.transition = 'none';
+                
+                if (i < index) {
+                    fill.style.width = '100%';
+                } else if (i > index) {
+                    fill.style.width = '0%';
+                } else {
+                    fill.style.width = '0%';
+                    void fill.offsetWidth; 
+                    fill.style.transition = `width ${slideDuration}ms linear`;
+                    fill.style.width = '100%';
+                }
+            });
+
+            clearTimeout(slideInterval);
+            if (index < slides.length - 1) {
+                slideInterval = setTimeout(() => {
+                    nextSlide();
+                }, slideDuration);
+            }
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        async function sharePage(e) {
+            if(e) e.stopPropagation();
+
+            const shareData = {
+                title: 'Paddington Rec Juniors 2024 Wrapped',
+                text: 'Check out the 2024 stats for Paddington Rec Junior Parkrun!',
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log('Error sharing:', err);
+                }
+            } 
+            else if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => showToast("Link copied to clipboard!"))
+                    .catch((err) => {
+                        console.error('Async: Could not copy text: ', err);
+                        fallbackCopyTextToClipboard(window.location.href);
+                    });
+            } 
+            else {
+                fallbackCopyTextToClipboard(window.location.href);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                if(successful) {
+                    showToast("Link copied to clipboard!");
+                } else {
+                    showToast("Unable to copy link");
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                alert("Please manually copy the URL from your address bar.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Initialize
+        showSlide(0);
+
+    </script>
+</body>
+</html>
